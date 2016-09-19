@@ -6,10 +6,16 @@ import TicTacToe.Board
 import TicTacToe.Tuple.Extensions
 
 move:: String -> Maybe (Int, Int, Char)
-move input = Just (resolveMove (parse input))
+move input = resolveMove (parse input)
 
-resolveMove:: [(Int, Int, Char)] -> (Int, Int, Char)
-resolveMove moves = getMyMove (removeMoves getEmptyBoard moves) moves
+resolveMove:: [(Int, Int, Char)] -> Maybe (Int, Int, Char)
+resolveMove moves =
+                 let
+                    (availableMoves) = removeMoves getEmptyBoard moves
+                 in
+                    case availableMoves of
+                     ([])  -> Nothing
+                     _  -> Just ( getMyMove availableMoves moves)
 
 getMyMove:: [Int] -> [(Int, Int, Char)] -> (Int, Int, Char)
 getMyMove (h:t) moves = (resolveX h, resolveY h, resolveSymbol moves)

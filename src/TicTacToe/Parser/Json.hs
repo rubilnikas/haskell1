@@ -4,9 +4,6 @@ import Data.List.Split
 import Data.List
 import Data.Maybe
 
-parse :: String -> [(Int, Int, Char)]
-parse input = map toTuple (takeByIndexes (concat (map (splitOn "}") (splitOn "{" (init (tail (removeCharFromString input ' ')))))) (incByX 2) 1)
-
 removeCharFromString :: String -> Char -> String
 removeCharFromString input char = filter (isNotSameChar char) input
 
@@ -16,16 +13,19 @@ isNotSameChar ch1 ch2 =
     then False
     else True
 
-toTuple :: String -> (Int, Int, Char)
-toTuple input = extractTupleValues (concat (map (splitOn ",") (splitOn ":" (map toUpper (removeCharFromString input '\"')))))
+parse :: String -> [(Int, Int, Char)]
+parse input =
+    let
+        (withoutspaces) = removeCharFromString input ' '
+        (cleaned) = removeCharFromString withoutspaces '\"'
+        (upperCased) = map toUpper cleaned
+    in
+        case upperCased of
+            ('{':rest) -> parseTuples rest
+            _          -> error "{ expected"
 
-extractTupleValues :: [String] -> (Int, Int, Char)
-extractTupleValues input = (read(input!!(fromJust(elemIndex "X" input) +1))::Int,read (input!!(fromJust(elemIndex "Y" input) +1))::Int,head (input!!(fromJust(elemIndex "V" input) +1)))
-
-incByX :: Int -> Int -> Int
-incByX c i = i + c
-
-takeByIndexes :: [a] -> (Int -> Int) -> Int -> [a]
-takeByIndexes source increaseIndex index = if length source <= index
-                                           then []
-                                           else source!!index : takeByIndexes source increaseIndex (increaseIndex index)
+parseTuples :: String -> [(Int, Int, Char)]
+parseTuples (_:':':'{':'X':':':x:',':'Y':':':y:',':'V':':':p:'}':rest) = (read (x:[])::Int, read (y:[])::Int, p):parseTuples rest
+parseTuples (',':rest) = parseTuples rest
+parseTuples ('}':_) = []
+parseTuples a = error ("Something unexpected in json: "++a)
