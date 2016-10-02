@@ -3,6 +3,7 @@ import Data.Char
 import Data.List.Split
 import Data.List
 import Data.Maybe
+import TicTacToe.Move.Move
 
 removeCharFromString :: String -> Char -> String
 removeCharFromString input char = filter (isNotSameChar char) input
@@ -13,7 +14,7 @@ isNotSameChar ch1 ch2 =
     then False
     else True
 
-parse :: String -> [(Int, Int, Char)]
+parse :: String -> [Move]
 parse input =
     let
         (withoutspaces) = removeCharFromString input ' '
@@ -24,8 +25,15 @@ parse input =
             ('{':rest) -> parseTuples rest
             _          -> error "{ expected"
 
-parseTuples :: String -> [(Int, Int, Char)]
-parseTuples (_:':':'{':'X':':':x:',':'Y':':':y:',':'V':':':p:'}':rest) = (read (x:[])::Int, read (y:[])::Int, p):parseTuples rest
+parseTuples :: String -> [Move]
+parseTuples (_:':':'{':'X':':':x:',':'Y':':':y:',':'V':':':p:'}':rest) = Move (getInt x) (getInt y) (getPlayer p):parseTuples rest
 parseTuples (',':rest) = parseTuples rest
 parseTuples ('}':_) = []
-parseTuples a = error ("Something unexpected in json: "++a)
+parseTuples a = error ("Something unexpected in json: " ++ a)
+
+getInt :: Char -> Int
+getInt a = read (a:[])::Int
+
+getPlayer :: Char -> Player
+getPlayer 'X' = X
+getplayer 'O' = O
