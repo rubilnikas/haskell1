@@ -18,6 +18,7 @@ resolveMove moves =
                      _  -> Just ( getMyMove availableMoves moves)
 
 getMyMove:: [Move] -> [Move] -> Move
+getMyMove (h:t) [] = Move (x h) (y h) X
 getMyMove (h:t) moves =
                  let
                      (last) = length moves - 1
