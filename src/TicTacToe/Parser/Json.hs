@@ -36,4 +36,4 @@ getInt a = read (a:[])::Int
 
 getPlayer :: Char -> Player
 getPlayer 'X' = X
-getplayer 'O' = O
+getPlayer 'O' = O
