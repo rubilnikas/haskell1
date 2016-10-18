@@ -22,14 +22,14 @@ parse input =
         (upperCased) = map toUpper cleaned
     in
         case upperCased of
-            ('{':rest) -> parseTuples rest
+            ('{':rest) -> parseMoves rest []
             _          -> error "{ expected"
 
-parseTuples :: String -> [Move]
-parseTuples (_:':':'{':'X':':':x:',':'Y':':':y:',':'V':':':p:'}':rest) = Move (getInt x) (getInt y) (getPlayer p):parseTuples rest
-parseTuples (',':rest) = parseTuples rest
-parseTuples ('}':_) = []
-parseTuples a = error ("Something unexpected in json: " ++ a)
+parseMoves :: String -> [Move] -> [Move]
+parseMoves (_:':':'{':'X':':':x:',':'Y':':':y:',':'V':':':p:'}':rest) result = parseMoves rest ((Move (getInt x) (getInt y) (getPlayer p)) : result)
+parseMoves (',':rest) result = parseMoves rest result
+parseMoves ('}':_) result = result
+parseMoves a _ = error ("Something unexpected in json: " ++ a)
 
 getInt :: Char -> Int
 getInt a = read (a:[])::Int
